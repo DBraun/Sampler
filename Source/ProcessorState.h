@@ -1,12 +1,4 @@
-# Sampler
-
-This is a **work-in-progress** improvement of JUCE's [SamplerPluginDemo](https://github.com/juce-framework/JUCE/blob/90e8da0cfb54ac593cdbed74c3d0c9b09bad3a9f/examples/Plugins/SamplerPluginDemo.h).
-
-## License
-
-All files that copy or modify code from the original demo include this license disclaimer:
-
-```
+/*
   ==============================================================================
    This file is part of the JUCE examples.
    Copyright (c) 2020 - Raw Material Software Limited
@@ -19,6 +11,20 @@ All files that copy or modify code from the original demo include this license d
    WHETHER EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR
    PURPOSE, ARE DISCLAIMED.
   ==============================================================================
-```
+*/
 
-All other files are distributed under the `LICENSE` next to this `README`.
+#pragma once
+
+struct ProcessorState
+{
+    int synthVoices;
+    bool legacyModeEnabled;
+    Range<int> legacyChannels;
+    int legacyPitchbendRange;
+    bool voiceStealingEnabled;
+    MPEZoneLayout mpeZoneLayout;
+    std::unique_ptr<AudioFormatReaderFactory> readerFactory;
+    Range<double> loopPointsSeconds;
+    double centreFrequencyHz;
+    LoopMode loopMode;
+};
