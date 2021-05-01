@@ -41,9 +41,9 @@ public:
         m_length(soundData.at(0).size()) {
 
         int numChans = soundData.size();
-        int numSamples = soundData.at(0).size();
+        int numSamples = m_length;
 
-        m_temp_data.setSize(soundData.size(), numSamples, false, true, false);
+        m_temp_data.setSize(numChans, numSamples, false, true, false);
 
         for (int chan = 0; chan < numChans; chan++) {
             m_temp_data.copyFrom(chan, 0, soundData.at(chan).data(), m_length);
@@ -80,6 +80,7 @@ private:
         }
 
         m_length *= upSampleRatio;
+        m_sourceSampleRate *= upSampleRatio;
 
         m_temp_data.clear();
     }
