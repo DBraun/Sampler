@@ -39,12 +39,16 @@ namespace IDs
     DECLARE_ID(loopMode)
     DECLARE_ID(loopPointsSeconds)
 
+    DECLARE_ID(centerNote)
+
+    DECLARE_ID(ampActive)
     DECLARE_ID(ampEnvAttack)
     DECLARE_ID(ampEnvDecay)
     DECLARE_ID(ampEnvSustain)
     DECLARE_ID(ampEnvRelease)
     DECLARE_ID(ampEnvModAmt)
 
+    DECLARE_ID(filterActive)
     DECLARE_ID(filterCutoff)
 
     DECLARE_ID(filterEnvAttack)

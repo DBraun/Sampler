@@ -27,11 +27,6 @@ public:
         jassert(samplerSound != nullptr);
 
         m_Buffer.setSize(2, 1, false, true, false);
-
-        // todo: adsr.setParameters;
-        // todo: filterEnv.setParameters;
-
-        setFilterActive(true);
     }
 
     MPESamplerVoice::~MPESamplerVoice() {
@@ -138,10 +133,6 @@ public:
         updateFilterEnv();
     }
 
-    void setFilterActive(bool activeState) {
-        // todo:
-    }
-
 private:
 
     void updateAmpEnv() {
@@ -157,7 +148,7 @@ private:
     }
 
     void updateFilter() {
-        filterCutoff = *(valueTreeState.getRawParameterValue("filterCutoff"));
+        filterCutoff = *(valueTreeState.getRawParameterValue(IDs::filterCutoff));
     }
 
     void updateFilterEnv() {
@@ -210,8 +201,8 @@ private:
         Element* outR,
         size_t writePos)
     {
-        auto currentLevel = level.getNextValue();
-        auto currentFrequency = frequency.getNextValue();
+        auto currentLevel = level.getNextValue();  // based on note velocity
+        auto currentFrequency = frequency.getNextValue();  // based on note pitch
         auto currentLoopBegin = loopBegin.getNextValue();
         auto currentLoopEnd = loopEnd.getNextValue();
 
@@ -232,28 +223,34 @@ private:
         auto alpha = (Element)(currentSamplePos - pos);
         auto invAlpha = 1.0f - alpha;
 
-        // just using a very simple linear interpolation here..
-        // todo: use Catmull interpolation or Lagrange Interpolation.
-        auto l = static_cast<Element> (currentLevel * (inL[pos] * invAlpha + inL[nextPos] * alpha));
-        auto r = static_cast<Element> ((inR != nullptr) ? currentLevel * (inR[pos] * invAlpha + inR[nextPos] * alpha)
+        // Very simple linear interpolation here because the Sampler class should have already upsampled.
+        auto l = static_cast<Element> ((inL[pos] * invAlpha + inL[nextPos] * alpha));
+        auto r = static_cast<Element> ((inR != nullptr) ? (inR[pos] * invAlpha + inR[nextPos] * alpha)
             : l);
 
         m_Buffer.setSample(0, 0, l);
         m_Buffer.setSample(1, 0, r);
 
+        // apply velocity-> gain
+        m_Buffer.applyGain(currentlyPlayingNote.noteOnVelocity.asUnsignedFloat());
+
         // apply amplitude
-        m_Buffer.applyGain(ampEnv.getNextSample());
+        if (*valueTreeState.getRawParameterValue(IDs::ampActive)) {
+            m_Buffer.applyGain(ampEnv.getNextSample());
+        }
 
         float cutoff = filterCutoff + filterCutoffModAmt*filterEnv.getNextSample();
         cutoff = fmax(40., fmin(20000., cutoff));
 
-        float q_val = 0.7;
+        float q_val = 0.70710678118;
         *m_Filter.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(currentSampleRate, cutoff, q_val);
 
-        // apply low pass filter
-        juce::dsp::AudioBlock<float> block(m_Buffer);
-        juce::dsp::ProcessContextReplacing<float> context(block);
-        m_Filter.process(context);
+        if (*valueTreeState.getRawParameterValue(IDs::filterActive)) {
+            // apply low pass filter
+            juce::dsp::AudioBlock<float> block(m_Buffer);
+            juce::dsp::ProcessContextReplacing<float> context(block);
+            m_Filter.process(context);
+        }
 
         if (outR != nullptr)
         {

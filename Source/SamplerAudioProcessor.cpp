@@ -25,7 +25,7 @@ SamplerAudioProcessor::SamplerAudioProcessor()
     : AudioProcessor(BusesProperties().withOutput("Output", AudioChannelSet::stereo(), true)),
     parameters (*this, nullptr, juce::Identifier("SamplerAudioProcessor"), createParameters())
 {
-    //parameters.state.addListener(this);
+    parameters.addParameterListener(IDs::centerNote, this);
 
     if (auto inputStream = createAssetInputStream("cello.wav"))
     {
@@ -52,13 +52,27 @@ SamplerAudioProcessor::SamplerAudioProcessor()
 }
 
 SamplerAudioProcessor::~SamplerAudioProcessor() {
-    //parameters.state.removeListener(this);
+    parameters.removeParameterListener(IDs::centerNote, this);
+}
+
+void SamplerAudioProcessor::parameterChanged(const String& parameterID, float newValue) {
+
+    //std::cout << "parameter changed: " << parameterID << " to " << newValue << std::endl;
+
+    if (parameterID.equalsIgnoreCase(IDs::centerNote)) {
+        float pitchInHz = MidiMessage::getMidiNoteInHertz((int)newValue);
+        dataModel.setCentreFrequencyHz(pitchInHz, nullptr);
+        this->samplerSound->setCentreFrequencyInHz(pitchInHz);
+    }
 }
 
 AudioProcessorValueTreeState::ParameterLayout SamplerAudioProcessor::createParameters()
 {
     std::vector<std::unique_ptr<RangedAudioParameter>> params;
 
+    params.push_back(std::make_unique<AudioParameterFloat>("centerNote", "Center Note", 0.0f, 127.0f, 60.0f));
+
+    params.push_back(std::make_unique<AudioParameterBool>("ampActive", "Amp Active", false));
     params.push_back(std::make_unique<AudioParameterFloat>("ampEnvAttack", "Amp Env Attack", 0.0f, 3000.0f, 50.0f));
     params.push_back(std::make_unique<AudioParameterFloat>("ampEnvDecay", "Amp Env Decay", 0.0f, 3000.0f, 50.0f));
     params.push_back(std::make_unique<AudioParameterFloat>("ampEnvSustain", "Amp Env Sustain", 0.0f, 1.0f, 1.0f));
@@ -66,6 +80,7 @@ AudioProcessorValueTreeState::ParameterLayout SamplerAudioProcessor::createParam
     params.push_back(std::make_unique<AudioParameterFloat>("ampEnvModAmt", "Amp Env Mod Amt", 0.0f, 10.0f, 1.0f));
 
     params.push_back(std::make_unique<AudioParameterFloat>("filterCutoff", "Filter Cutoff", 20.0f, 20000., 20000.));
+    params.push_back(std::make_unique<AudioParameterBool>("filterActive", "Filter Active", false));
 
     params.push_back(std::make_unique<AudioParameterFloat>("filterEnvAttack", "Filter Env Attack", 0.0f, 3000.0f, 50.0f));
     params.push_back(std::make_unique<AudioParameterFloat>("filterEnvDecay", "Filter Env Decay", 0.0f, 3000.0f, 50.0f));

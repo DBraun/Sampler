@@ -28,7 +28,7 @@
 #include "CommandFifo.h"
 
 
-class SamplerAudioProcessor : public AudioProcessor
+class SamplerAudioProcessor : public AudioProcessor, public AudioProcessorValueTreeState::Listener
 {
 
 public:
@@ -99,6 +99,8 @@ public:
     // value won't correspond to an existing voice.
     int getNumVoices() const;
     float getPlaybackPosition(int voice) const;
+
+    void parameterChanged(const String& parameterID, float newValue);
 
 private:
     //==============================================================================
