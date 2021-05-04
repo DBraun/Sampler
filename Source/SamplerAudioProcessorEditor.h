@@ -16,8 +16,8 @@
 #pragma once
 
 #include "SamplerAudioProcessor.h"
-#include "MPESettingsComponent.h"
-#include "MainSamplerView.h"
+#include "Components/MPESettingsComponent.h"
+#include "Components/MainSamplerView.h"
 #include "ProcessorState.h"
 
 using namespace std;
@@ -28,7 +28,7 @@ class SamplerAudioProcessorEditor : public AudioProcessorEditor,
     private MPESettingsDataModel::Listener
 {
 public:
-    SamplerAudioProcessorEditor(SamplerAudioProcessor& p, ProcessorState state, const DataModel& model, AudioFormatManager& afManager);
+    SamplerAudioProcessorEditor(SamplerAudioProcessor& p, ProcessorState state, const DataModel& model, AudioFormatManager& afManager, AudioProcessorValueTreeState& vts);
 
 private:
     void resized() override;

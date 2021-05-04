@@ -17,24 +17,31 @@
 
 #include "PlaybackPositionOverlay.h"
 #include "WaveformEditor.h"
-#include "MPESamplerVoiceDataModel.h"
+
+typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 
 class MainSamplerView : public Component,
     private DataModel::Listener,
-    private MPESamplerVoiceDataModel::Listener,
-    private ChangeListener
+    private ChangeListener,
+    public ValueTree::Listener
 {
 public:
     MainSamplerView(const DataModel& model,
         PlaybackPositionOverlay::Provider provider,
-        UndoManager& um)
+        UndoManager& um,
+        AudioProcessorValueTreeState& vts)
         : dataModel(model),
-        samplerVoiceDataModel(dataModel.samplerVoiceSettings()),
         waveformEditor(dataModel, move(provider), um),
-        undoManager(um)
+        undoManager(um),
+        valueTreeState(vts)
     {
+        valueTreeState.state.addListener(this);
+
         dataModel.addListener(*this);
+
+        int WIDTH = 48;
 
         addAndMakeVisible(waveformEditor);
         addAndMakeVisible(loadNewSampleButton);
@@ -43,129 +50,95 @@ public:
 
         ampEnvAttackSlider.setSliderStyle(Slider::LinearVertical);
         ampEnvAttackSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        ampEnvAttackSlider.setBounds(40, 120, 40, 136);
+        ampEnvAttackSlider.setBounds(0*WIDTH, 120, 40, 136);
         ampEnvAttackSlider.setRange(0.0f, 500.0f);
         ampEnvAttackSlider.setValue(0.0f);
         addAndMakeVisible(ampEnvAttackSlider);
 
         ampEnvDecaySlider.setSliderStyle(Slider::LinearVertical);
         ampEnvDecaySlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        ampEnvDecaySlider.setBounds(88, 120, 40, 136);
+        ampEnvDecaySlider.setBounds(1 * WIDTH, 120, 40, 136);
         ampEnvDecaySlider.setRange(0.0f, 1000.0f);
         ampEnvDecaySlider.setValue(0.0f);
         addAndMakeVisible(ampEnvDecaySlider);
 
         ampEnvSustainSlider.setSliderStyle(Slider::LinearVertical);
         ampEnvSustainSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        ampEnvSustainSlider.setBounds(136, 120, 40, 136);
+        ampEnvSustainSlider.setBounds(2 * WIDTH, 120, 40, 136);
         ampEnvSustainSlider.setRange(0.0f, 1.0f);
         ampEnvSustainSlider.setValue(1.0f);
         addAndMakeVisible(ampEnvSustainSlider);
 
         ampEnvReleaseSlider.setSliderStyle(Slider::LinearVertical);
         ampEnvReleaseSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        ampEnvReleaseSlider.setBounds(184, 120, 40, 136);
+        ampEnvReleaseSlider.setBounds(3 * WIDTH, 120, 40, 136);
         ampEnvReleaseSlider.setRange(0.0f, 5000.0f);
         ampEnvReleaseSlider.setValue(1000.0f);
         addAndMakeVisible(ampEnvReleaseSlider);
 
+        ampEnvModAmtSlider.setSliderStyle(Slider::LinearVertical);
+        ampEnvModAmtSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
+        ampEnvModAmtSlider.setBounds(4 * WIDTH, 120, 40, 136);
+        ampEnvModAmtSlider.setRange(-20000., 20000.0f);
+        ampEnvModAmtSlider.setValue(0.0f);
+        addAndMakeVisible(ampEnvModAmtSlider);
+
+
+
         filterEnvAttackSlider.setSliderStyle(Slider::LinearVertical);
         filterEnvAttackSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        filterEnvAttackSlider.setBounds(184+40, 120, 40, 136);
+        filterEnvAttackSlider.setBounds(5 * WIDTH, 120, 40, 136);
         filterEnvAttackSlider.setRange(0.0f, 500.0f);
         filterEnvAttackSlider.setValue(0.0f);
         addAndMakeVisible(filterEnvAttackSlider);
 
         filterEnvDecaySlider.setSliderStyle(Slider::LinearVertical);
         filterEnvDecaySlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        filterEnvDecaySlider.setBounds(184+88, 120, 40, 136);
+        filterEnvDecaySlider.setBounds(6 * WIDTH, 120, 40, 136);
         filterEnvDecaySlider.setRange(0.0f, 1000.0f);
         filterEnvDecaySlider.setValue(0.0f);
         addAndMakeVisible(filterEnvDecaySlider);
 
         filterEnvSustainSlider.setSliderStyle(Slider::LinearVertical);
         filterEnvSustainSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        filterEnvSustainSlider.setBounds(184+136, 120, 40, 136);
+        filterEnvSustainSlider.setBounds(7 * WIDTH, 120, 40, 136);
         filterEnvSustainSlider.setRange(0.0f, 1.0f);
         filterEnvSustainSlider.setValue(1.0f);
         addAndMakeVisible(filterEnvSustainSlider);
 
         filterEnvReleaseSlider.setSliderStyle(Slider::LinearVertical);
         filterEnvReleaseSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        filterEnvReleaseSlider.setBounds(184+184, 120, 40, 136);
+        filterEnvReleaseSlider.setBounds(8 * WIDTH, 120, 40, 136);
         filterEnvReleaseSlider.setRange(.0f, 5000.0f);
         filterEnvReleaseSlider.setValue(1000.0f);
         addAndMakeVisible(filterEnvReleaseSlider);
 
         filterEnvModAmtSlider.setSliderStyle(Slider::LinearVertical);
         filterEnvModAmtSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
-        filterEnvModAmtSlider.setBounds(184 + 184+48, 120, 40, 136);
+        filterEnvModAmtSlider.setBounds(9 * WIDTH, 120, 40, 136);
         filterEnvModAmtSlider.setRange(-20000., 20000.0f);
         filterEnvModAmtSlider.setValue(0.0f);
         addAndMakeVisible(filterEnvModAmtSlider);
 
-        ampEnvAttackSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setAmpEnvAttack(ampEnvAttackSlider.getValue()*.001,
-                ampEnvAttackSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
+        filterCutoffSlider.setSliderStyle(Slider::LinearVertical);
+        filterCutoffSlider.setTextBoxStyle(Slider::NoTextBox, false, 40, 20);
+        filterCutoffSlider.setBounds(10 * WIDTH, 120, 40, 136);
+        filterCutoffSlider.setRange(-20000., 20000.0f);
+        filterCutoffSlider.setValue(0.0f);
+        addAndMakeVisible(filterCutoffSlider);
 
-        ampEnvDecaySlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setAmpEnvDecay(ampEnvDecaySlider.getValue() * .001,
-                ampEnvDecaySlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
+        filterEnvAttackAttachment.reset(new SliderAttachment(valueTreeState, "filterEnvAttack", filterEnvAttackSlider));
+        filterEnvDecayAttachment.reset(new SliderAttachment(valueTreeState, "filterEnvDecay", filterEnvDecaySlider));
+        filterEnvSustainAttachment.reset(new SliderAttachment(valueTreeState, "filterEnvSustain", filterEnvSustainSlider));
+        filterEnvReleaseAttachment.reset(new SliderAttachment(valueTreeState, "filterEnvRelease", filterEnvReleaseSlider));
+        filterEnvModAmtAttachment.reset(new SliderAttachment(valueTreeState, "filterEnvModAmt", filterEnvModAmtSlider));
+        filterCutoffAttachment.reset(new SliderAttachment(valueTreeState, "filterCutoff", filterCutoffSlider));
 
-        ampEnvSustainSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setAmpEnvSustain(ampEnvSustainSlider.getValue(),
-                ampEnvSustainSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
-
-        ampEnvReleaseSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setAmpEnvRelease(ampEnvReleaseSlider.getValue() * .001,
-                ampEnvReleaseSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
-
-        filterEnvAttackSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setFilterEnvAttack(filterEnvAttackSlider.getValue() * .001,
-                filterEnvAttackSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
-
-        filterEnvDecaySlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setFilterEnvDecay(filterEnvDecaySlider.getValue() * .001,
-                filterEnvDecaySlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
-
-        filterEnvSustainSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setFilterEnvSustain(filterEnvSustainSlider.getValue(),
-                filterEnvSustainSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
-
-        filterEnvReleaseSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setFilterEnvRelease(filterEnvReleaseSlider.getValue() * .001,
-                filterEnvReleaseSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
-
-        filterEnvModAmtSlider.onValueChange = [this]
-        {
-            undoManager.beginNewTransaction();
-            samplerVoiceDataModel.setFilterEnvModAmt(filterEnvModAmtSlider.getValue(),
-                filterEnvModAmtSlider.isMouseButtonDown() ? nullptr : &undoManager);
-        };
+        ampEnvAttackAttachment.reset(new SliderAttachment(valueTreeState, "ampEnvAttack", ampEnvAttackSlider));
+        ampEnvDecayAttachment.reset(new SliderAttachment(valueTreeState, "ampEnvDecay", ampEnvDecaySlider));
+        ampEnvSustainAttachment.reset(new SliderAttachment(valueTreeState, "ampEnvSustain", ampEnvSustainSlider));
+        ampEnvReleaseAttachment.reset(new SliderAttachment(valueTreeState, "ampEnvRelease", ampEnvReleaseSlider));
+        ampEnvModAmtAttachment.reset(new SliderAttachment(valueTreeState, "ampEnvModAmt", ampEnvModAmtSlider));
 
         auto setReader = [this](const FileChooser& fc)
         {
@@ -195,7 +168,7 @@ public:
                 centreFrequency.isMouseButtonDown() ? nullptr : &undoManager);
         };
 
-        centreFrequency.setRange(20, 20000, 1);
+        centreFrequency.setRange(2, 20000, 1);
         centreFrequency.setSliderStyle(Slider::SliderStyle::IncDecButtons);
         centreFrequency.setIncDecButtonsMode(Slider::IncDecButtonMode::incDecButtonsDraggable_Vertical);
 
@@ -305,8 +278,9 @@ private:
         centreFrequency.setValue(value, dontSendNotification);
     }
 
+    AudioProcessorValueTreeState& valueTreeState;  // from the SamplerAudioProcessor
+
     DataModel dataModel;
-    MPESamplerVoiceDataModel samplerVoiceDataModel;
     WaveformEditor waveformEditor;
     TextButton loadNewSampleButton{ "Load New Sample" };
     TextButton undoButton{ "Undo" };
@@ -328,12 +302,28 @@ private:
     Slider ampEnvDecaySlider;
     Slider ampEnvSustainSlider;
     Slider ampEnvReleaseSlider;
+    Slider ampEnvModAmtSlider;
+
+    Slider filterCutoffSlider;
 
     Slider filterEnvAttackSlider;
     Slider filterEnvDecaySlider;
     Slider filterEnvSustainSlider;
     Slider filterEnvReleaseSlider;
     Slider filterEnvModAmtSlider;
+
+    std::unique_ptr<SliderAttachment> ampEnvAttackAttachment;
+    std::unique_ptr<SliderAttachment> ampEnvDecayAttachment;
+    std::unique_ptr<SliderAttachment> ampEnvSustainAttachment;
+    std::unique_ptr<SliderAttachment> ampEnvReleaseAttachment;
+    std::unique_ptr<SliderAttachment> ampEnvModAmtAttachment;
+
+    std::unique_ptr<SliderAttachment> filterEnvAttackAttachment;
+    std::unique_ptr<SliderAttachment> filterEnvDecayAttachment;
+    std::unique_ptr<SliderAttachment> filterEnvSustainAttachment;
+    std::unique_ptr<SliderAttachment> filterEnvReleaseAttachment;
+    std::unique_ptr<SliderAttachment> filterEnvModAmtAttachment;
+    std::unique_ptr<SliderAttachment> filterCutoffAttachment;
 
     UndoManager& undoManager;
 };

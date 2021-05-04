@@ -43,6 +43,9 @@ namespace IDs
     DECLARE_ID(ampEnvDecay)
     DECLARE_ID(ampEnvSustain)
     DECLARE_ID(ampEnvRelease)
+    DECLARE_ID(ampEnvModAmt)
+
+    DECLARE_ID(filterCutoff)
 
     DECLARE_ID(filterEnvAttack)
     DECLARE_ID(filterEnvDecay)

@@ -16,14 +16,13 @@
 #pragma once
 
 #include "MPESamplerSound.h"
-#include "MPESamplerVoiceDataModel.h"
 
-class MPESamplerVoice : public MPESynthesiserVoice,
-    private MPESamplerVoiceDataModel::Listener
+class MPESamplerVoice : public MPESynthesiserVoice
 {
 public:
-    explicit MPESamplerVoice(std::shared_ptr<const MPESamplerSound> sound, const MPESamplerVoiceDataModel& model)
-        : samplerSound(std::move(sound)), dataModel(model)
+    explicit MPESamplerVoice(std::shared_ptr<const MPESamplerSound> sound, AudioProcessorValueTreeState& vts)
+        : samplerSound(std::move(sound)),
+        valueTreeState(vts)
     {
         jassert(samplerSound != nullptr);
 
@@ -31,16 +30,21 @@ public:
 
         // todo: adsr.setParameters;
         // todo: filterEnv.setParameters;
-        dataModel.addListener(*this);
 
         setFilterActive(true);
-
-        setCurrentPlaybackSampleRate(44100.); // todo: this needs to be dynamic
-
     }
 
-    void setCurrentPlaybackSampleRate(double newRate) {
-        m_sampleRate = newRate;
+    MPESamplerVoice::~MPESamplerVoice() {
+    }
+
+    void setCurrentSampleRate(double newRate) {
+
+        MPESynthesiserVoice::setCurrentSampleRate(newRate);
+
+        if (newRate <= 0) {
+            return;
+        }
+
         ampEnv.setSampleRate(newRate);
         filterEnv.setSampleRate(newRate);
 
@@ -128,62 +132,53 @@ public:
     void loopModeChanged(LoopMode) {}
     void loopPointsSecondsChanged(Range<double>) {}
 
-    void ampEnvAttackChanged(double newValue) {
-        auto params = ampEnv.getParameters();
-        params.attack = newValue;
-        ampEnv.setParameters(params);
-    }
-    void ampEnvDecayChanged(double newValue) {
-        auto params = ampEnv.getParameters();
-        params.decay = newValue;
-        ampEnv.setParameters(params);
-    }
-    void ampEnvSustainChanged(double newValue) {
-        auto params = ampEnv.getParameters();
-        params.sustain = newValue;
-        ampEnv.setParameters(params);
-    }
-    void ampEnvReleaseChanged(double newValue) {
-        auto params = ampEnv.getParameters();
-        params.release = newValue;
-        ampEnv.setParameters(params);
-    }
-
-    void filterEnvAttackChanged(double newValue) {
-        auto params = filterEnv.getParameters();
-        params.attack = newValue;
-        filterEnv.setParameters(params);
-    }
-    void filterEnvDecayChanged(double newValue) {
-        auto params = filterEnv.getParameters();
-        params.decay = newValue;
-        filterEnv.setParameters(params);
-    }
-    void filterEnvSustainChanged(double newValue) {
-        auto params = filterEnv.getParameters();
-        params.sustain = newValue;
-        filterEnv.setParameters(params);
-    }
-    void filterEnvReleaseChanged(double newValue) {
-        auto params = filterEnv.getParameters();
-        params.release = newValue;
-        filterEnv.setParameters(params);
-    }
-    void filterEnvModAmtChanged(double newValue) {
-        // todo: smooth this?
-        filterCutoffModAmt = newValue;
+    void updateParams() {
+        updateAmpEnv();
+        updateFilter();
+        updateFilterEnv();
     }
 
     void setFilterActive(bool activeState) {
         // todo:
     }
 
-
 private:
+
+    void updateAmpEnv() {
+        
+        auto params = ampEnv.getParameters();
+        params.attack = *valueTreeState.getRawParameterValue(IDs::ampEnvAttack) * .001;
+        params.decay = *valueTreeState.getRawParameterValue(IDs::ampEnvDecay) * .001;
+        params.sustain = *valueTreeState.getRawParameterValue(IDs::ampEnvSustain);
+        params.release = *valueTreeState.getRawParameterValue(IDs::ampEnvRelease) *.001;
+        ampEnv.setParameters(params);
+        
+        // todo: update mod amount
+    }
+
+    void updateFilter() {
+        filterCutoff = *(valueTreeState.getRawParameterValue("filterCutoff"));
+    }
+
+    void updateFilterEnv() {
+        
+        auto params = filterEnv.getParameters();
+        params.attack = *valueTreeState.getRawParameterValue(IDs::filterEnvAttack) *.001;
+        params.decay = *valueTreeState.getRawParameterValue(IDs::filterEnvDecay) *.001;
+        params.sustain = *valueTreeState.getRawParameterValue(IDs::filterEnvSustain);
+        params.release = *valueTreeState.getRawParameterValue(IDs::filterEnvRelease) *.001;
+        filterEnv.setParameters(params);
+        
+        filterCutoffModAmt = *valueTreeState.getRawParameterValue(IDs::filterEnvModAmt);
+    }
+
+
     template <typename Element>
     void render(AudioBuffer<Element>& outputBuffer, int startSample, int numSamples)
     {
         jassert(samplerSound->getSample() != nullptr);
+
+        updateParams(); // NB: important line
 
         auto loopPoints = samplerSound->getLoopPointsInSeconds();
         loopBegin.setTargetValue(loopPoints.getStart() * samplerSound->getSample()->getSampleRate());
@@ -253,7 +248,7 @@ private:
         cutoff = fmax(40., fmin(20000., cutoff));
 
         float q_val = 0.7;
-        *m_Filter.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(m_sampleRate, cutoff, q_val);
+        *m_Filter.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(currentSampleRate, cutoff, q_val);
 
         // apply low pass filter
         juce::dsp::AudioBlock<float> block(m_Buffer);
@@ -317,7 +312,7 @@ private:
         double begin,
         double end) const
     {
-        auto nextPitchRatio = freq / samplerSound->getCentreFrequencyInHz();
+        auto nextPitchRatio = (freq / samplerSound->getCentreFrequencyInHz()) * samplerSound->getSample()->getSampleRate() / this->currentSampleRate;
 
         auto nextSamplePos = currentSamplePos;
         auto nextDirection = currentDirection;
@@ -364,6 +359,8 @@ private:
         return std::tuple<double, Direction>(nextSamplePos, nextDirection);
     }
 
+    AudioProcessorValueTreeState& valueTreeState;  // from the SamplerAudioProcessor
+
     std::shared_ptr<const MPESamplerSound> samplerSound;
     SmoothedValue<double> level{ 0 };
     SmoothedValue<double> frequency{ 0 };
@@ -374,14 +371,11 @@ private:
     Direction currentDirection{ Direction::forward };
     double smoothingLengthInSeconds{ 0.01 };
 
-    MPESamplerVoiceDataModel dataModel;
-    double m_sampleRate;
-
     ADSR ampEnv;
 
     ADSR filterEnv;
-    double filterCutoff = 1000.;
-    double filterCutoffModAmt = 8000.;
+    double filterCutoff = 20000.;
+    double filterCutoffModAmt = 0.;
 
     dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> m_Filter;
     AudioBuffer<float> m_Buffer;

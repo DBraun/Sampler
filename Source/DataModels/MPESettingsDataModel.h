@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "Misc.h"
+#include "../Misc.h"
 
 class MPESettingsDataModel : private ValueTree::Listener
 {

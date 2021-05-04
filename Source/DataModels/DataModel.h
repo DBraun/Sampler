@@ -16,7 +16,6 @@
 #pragma once
 
 #include "MPESettingsDataModel.h"
-#include "MPESamplerVoiceDataModel.h"
 
 class DataModel : private ValueTree::Listener
 {
@@ -59,8 +58,6 @@ public:
     void setLoopPointsSeconds(Range<double> value, UndoManager* undoManager);
 
     MPESettingsDataModel mpeSettings();
-
-    MPESamplerVoiceDataModel samplerVoiceSettings();
 
     void addListener(Listener& listener);
 

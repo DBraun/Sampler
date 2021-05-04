@@ -22,17 +22,19 @@
 #include "Misc.h"
 #include "MemoryAudioFormatReaderFactory.h"
 #include "Sample.h"
-#include "DataModel.h"
+#include "DataModels/DataModel.h"
 #include "MPESamplerSound.h"
 #include "MPESamplerVoice.h"
 #include "CommandFifo.h"
 
 
-class SamplerAudioProcessor : public AudioProcessor, AudioProcessorValueTreeState::Listener
+class SamplerAudioProcessor : public AudioProcessor
 {
 
 public:
     SamplerAudioProcessor();
+
+    ~SamplerAudioProcessor();
 
     void prepareToPlay(double sampleRate, int) override;
 
@@ -98,8 +100,6 @@ public:
     int getNumVoices() const;
     float getPlaybackPosition(int voice) const;
 
-    void parameterChanged(const String& parameterID, float newValue);
-
 private:
     //==============================================================================
     template <typename Element>
@@ -115,6 +115,9 @@ private:
     AudioFormatManager formatManager;
     DataModel dataModel{ formatManager };
 
+    AudioProcessorValueTreeState parameters;
+    AudioProcessorValueTreeState::ParameterLayout createParameters();
+
     // This mutex is used to ensure we don't modify the processor state during
     // a call to createEditor, which would cause the UI to become desynched
     // with the real state of the processor.
@@ -123,6 +126,7 @@ private:
     enum { maxVoices = 20 };
 
     // This is used for visualising the current playback position of each voice.
+    // It stores values in seconds units.
     std::array<std::atomic<float>, maxVoices> playbackPositions;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SamplerAudioProcessor)

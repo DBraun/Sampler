@@ -76,7 +76,7 @@ private:
 
         for (int outChan = 0; outChan < 2; outChan++) {
             int inChan = m_temp_data.getNumChannels() > 1 ? outChan : 0;
-            m_interpolator.process(1., m_temp_data.getReadPointer(inChan), m_data.getWritePointer(outChan), numOutputSamples, numInputSamples, 0);
+            m_interpolator.process(1./(double)(upSampleRatio), m_temp_data.getReadPointer(inChan), m_data.getWritePointer(outChan), numOutputSamples, numInputSamples, 0);
         }
 
         m_length *= upSampleRatio;

@@ -11,38 +11,34 @@
   <MAINGROUP id="QHrbIT" name="Sampler">
     <GROUP id="{6644D524-8832-8908-8EE4-3F0F233B2801}" name="Source">
       <GROUP id="{8D975FF3-B000-190C-6816-9246B71AC2D4}" name="DataModels">
-        <FILE id="Nf6ceS" name="DataModel.h" compile="0" resource="0" file="Source/DataModel.h"/>
-        <FILE id="DnV36H" name="DataModel.cpp" compile="1" resource="0" file="Source/DataModel.cpp"/>
-        <FILE id="PTUZI3" name="MPESamplerVoiceDataModel.cpp" compile="1" resource="0"
-              file="Source/MPESamplerVoiceDataModel.cpp"/>
-        <FILE id="M2BntF" name="MPESamplerVoiceDataModel.h" compile="0" resource="0"
-              file="Source/MPESamplerVoiceDataModel.h"/>
-        <FILE id="roTJyD" name="MPESettingsDataModel.h" compile="0" resource="0"
-              file="Source/MPESettingsDataModel.h"/>
-        <FILE id="SVmTlC" name="MPESettingsDataModel.cpp" compile="1" resource="0"
-              file="Source/MPESettingsDataModel.cpp"/>
-        <FILE id="ymFCgv" name="VisibleRangeDataModel.h" compile="0" resource="0"
-              file="Source/VisibleRangeDataModel.h"/>
+        <FILE id="wSdGFX" name="DataModel.cpp" compile="1" resource="0" file="Source/DataModels/DataModel.cpp"/>
+        <FILE id="HL9fPP" name="DataModel.h" compile="0" resource="0" file="Source/DataModels/DataModel.h"/>
+        <FILE id="xRtZRg" name="MPESettingsDataModel.cpp" compile="1" resource="0"
+              file="Source/DataModels/MPESettingsDataModel.cpp"/>
+        <FILE id="McSYGP" name="MPESettingsDataModel.h" compile="0" resource="0"
+              file="Source/DataModels/MPESettingsDataModel.h"/>
+        <FILE id="VL60nN" name="VisibleRangeDataModel.h" compile="0" resource="0"
+              file="Source/DataModels/VisibleRangeDataModel.h"/>
       </GROUP>
       <GROUP id="{7A8C2965-0D37-F471-8906-D7DA095DC329}" name="Components">
-        <FILE id="WEHHzz" name="LoopPointMarker.h" compile="0" resource="0"
-              file="Source/LoopPointMarker.h"/>
-        <FILE id="CA585n" name="LoopPointsOverlay.h" compile="0" resource="0"
-              file="Source/LoopPointsOverlay.h"/>
-        <FILE id="qxcVlX" name="PlaybackPositionOverlay.h" compile="0" resource="0"
-              file="Source/PlaybackPositionOverlay.h"/>
-        <FILE id="hUrCOn" name="Ruler.h" compile="0" resource="0" file="Source/Ruler.h"/>
-        <FILE id="T1ovz1" name="MainSamplerView.h" compile="0" resource="0"
-              file="Source/MainSamplerView.h"/>
-        <FILE id="IflEpj" name="MPELegacySettingsComponent.h" compile="0" resource="0"
-              file="Source/MPELegacySettingsComponent.h"/>
-        <FILE id="v7Uq1b" name="MPENewSettingsComponent.h" compile="0" resource="0"
-              file="Source/MPENewSettingsComponent.h"/>
-        <FILE id="da8yXo" name="MPESettingsComponent.h" compile="0" resource="0"
-              file="Source/MPESettingsComponent.h"/>
-        <FILE id="fYShrz" name="WaveformEditor.h" compile="0" resource="0"
-              file="Source/WaveformEditor.h"/>
-        <FILE id="eaoOMm" name="WaveformView.h" compile="0" resource="0" file="Source/WaveformView.h"/>
+        <FILE id="FQyRW6" name="LoopPointMarker.h" compile="0" resource="0"
+              file="Source/Components/LoopPointMarker.h"/>
+        <FILE id="Dswv7x" name="LoopPointsOverlay.h" compile="0" resource="0"
+              file="Source/Components/LoopPointsOverlay.h"/>
+        <FILE id="pyVXKs" name="MainSamplerView.h" compile="0" resource="0"
+              file="Source/Components/MainSamplerView.h"/>
+        <FILE id="giNpAP" name="MPELegacySettingsComponent.h" compile="0" resource="0"
+              file="Source/Components/MPELegacySettingsComponent.h"/>
+        <FILE id="Bh9kdN" name="MPENewSettingsComponent.h" compile="0" resource="0"
+              file="Source/Components/MPENewSettingsComponent.h"/>
+        <FILE id="UjFnyt" name="MPESettingsComponent.h" compile="0" resource="0"
+              file="Source/Components/MPESettingsComponent.h"/>
+        <FILE id="TQwxLN" name="PlaybackPositionOverlay.h" compile="0" resource="0"
+              file="Source/Components/PlaybackPositionOverlay.h"/>
+        <FILE id="B6GRhh" name="Ruler.h" compile="0" resource="0" file="Source/Components/Ruler.h"/>
+        <FILE id="jNRI4G" name="WaveformEditor.h" compile="0" resource="0"
+              file="Source/Components/WaveformEditor.h"/>
+        <FILE id="n6UVZW" name="WaveformView.h" compile="0" resource="0" file="Source/Components/WaveformView.h"/>
       </GROUP>
       <FILE id="a5715X" name="CommandFifo.h" compile="0" resource="0" file="Source/CommandFifo.h"/>
       <FILE id="oHJjL2" name="FileAudioFormatReaderFactory.h" compile="0"

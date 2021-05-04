@@ -70,7 +70,7 @@ double DataModel::getCentreFrequencyHz() const
 
 void DataModel::setCentreFrequencyHz(double value, UndoManager* undoManager)
 {
-    centreFrequencyHz.setValue(Range<double>(20, 20000).clipValue(value),
+    centreFrequencyHz.setValue(Range<double>(2, 20000).clipValue(value),
         undoManager);
 }
 
@@ -98,11 +98,6 @@ void DataModel::setLoopPointsSeconds(Range<double> value, UndoManager* undoManag
 MPESettingsDataModel DataModel::mpeSettings()
 {
     return MPESettingsDataModel(valueTree.getOrCreateChildWithName(IDs::MPE_SETTINGS, nullptr));
-}
-
-MPESamplerVoiceDataModel DataModel::samplerVoiceSettings()
-{
-    return MPESamplerVoiceDataModel(valueTree.getOrCreateChildWithName(IDs::samplerVoice, nullptr));
 }
 
 void DataModel::addListener(Listener& listener)

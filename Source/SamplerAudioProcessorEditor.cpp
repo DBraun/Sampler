@@ -17,7 +17,7 @@
 #include "SamplerAudioProcessor.h"
 
 SamplerAudioProcessorEditor::SamplerAudioProcessorEditor(SamplerAudioProcessor& p, ProcessorState state, const DataModel& model,
-    AudioFormatManager& afManager)
+    AudioFormatManager& afManager, AudioProcessorValueTreeState& vts)
     : AudioProcessorEditor(&p),
     dataModel(model),
     formatManager(afManager),
@@ -34,7 +34,8 @@ SamplerAudioProcessorEditor::SamplerAudioProcessorEditor(SamplerAudioProcessor& 
 
             return ret;
         },
-            undoManager)
+            undoManager,
+            vts)
 {
     dataModel.addListener(*this);
     mpeSettings.addListener(*this);

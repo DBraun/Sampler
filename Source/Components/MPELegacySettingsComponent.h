@@ -15,8 +15,7 @@
 
 #pragma once
 
-#include "MPESettingsDataModel.h"
-#include "VisibleRangeDataModel.h"
+#include "DataModels/VisibleRangeDataModel.h"
 
 class MPELegacySettingsComponent final : public Component,
     private MPESettingsDataModel::Listener

@@ -22,8 +22,11 @@
 
 
 SamplerAudioProcessor::SamplerAudioProcessor() 
-    : AudioProcessor(BusesProperties().withOutput("Output", AudioChannelSet::stereo(), true))
+    : AudioProcessor(BusesProperties().withOutput("Output", AudioChannelSet::stereo(), true)),
+    parameters (*this, nullptr, juce::Identifier("SamplerAudioProcessor"), createParameters())
 {
+    //parameters.state.addListener(this);
+
     if (auto inputStream = createAssetInputStream("cello.wav"))
     {
         inputStream->readIntoMemoryBlock(mb);
@@ -44,8 +47,33 @@ SamplerAudioProcessor::SamplerAudioProcessor()
 
     // Start with the max number of voices
     for (auto i = 0; i != maxVoices; ++i) {
-        synthesiser.addVoice(new MPESamplerVoice(sound, dataModel.samplerVoiceSettings()));
+        synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
+}
+
+SamplerAudioProcessor::~SamplerAudioProcessor() {
+    //parameters.state.removeListener(this);
+}
+
+AudioProcessorValueTreeState::ParameterLayout SamplerAudioProcessor::createParameters()
+{
+    std::vector<std::unique_ptr<RangedAudioParameter>> params;
+
+    params.push_back(std::make_unique<AudioParameterFloat>("ampEnvAttack", "Amp Env Attack", 0.0f, 3000.0f, 50.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("ampEnvDecay", "Amp Env Decay", 0.0f, 3000.0f, 50.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("ampEnvSustain", "Amp Env Sustain", 0.0f, 1.0f, 1.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("ampEnvRelease", "Amp Env Release", 0.0f, 3000.0f, 50.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("ampEnvModAmt", "Amp Env Mod Amt", 0.0f, 10.0f, 1.0f));
+
+    params.push_back(std::make_unique<AudioParameterFloat>("filterCutoff", "Filter Cutoff", 20.0f, 20000., 20000.));
+
+    params.push_back(std::make_unique<AudioParameterFloat>("filterEnvAttack", "Filter Env Attack", 0.0f, 3000.0f, 50.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("filterEnvDecay", "Filter Env Decay", 0.0f, 3000.0f, 50.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("filterEnvSustain", "Filter Env Sustain", 0.0f, 1.0f, 1.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("filterEnvRelease", "Filter Env Release", 0.0f, 3000.0f, 50.0f));
+    params.push_back(std::make_unique<AudioParameterFloat>("filterEnvModAmt", "Filter Env Mod Amt", -20000.0f, 20000.0f, 0.0f));
+
+    return { params.begin(), params.end() };
 }
 
 void SamplerAudioProcessor::prepareToPlay(double sampleRate, int)
@@ -83,7 +111,7 @@ AudioProcessorEditor* SamplerAudioProcessor::createEditor()
     state.centreFrequencyHz = sound->getCentreFrequencyInHz();
     state.loopMode = sound->getLoopMode();
 
-    return new SamplerAudioProcessorEditor(*this, std::move(state), this->dataModel, this->formatManager);
+    return new SamplerAudioProcessorEditor(*this, std::move(state), this->dataModel, this->formatManager, this->parameters);
 }
 
 bool SamplerAudioProcessor::hasEditor() const { return true; }
@@ -159,7 +187,7 @@ void SamplerAudioProcessor::setSample(std::unique_ptr<AudioFormatReaderFactory> 
     newSamplerVoices.reserve(maxVoices);
 
     for (auto i = 0; i != maxVoices; ++i)
-        newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, dataModel.samplerVoiceSettings()));
+        newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, this->parameters));
 
     if (fact == nullptr)
     {
@@ -190,7 +218,7 @@ void SamplerAudioProcessor::setSample(std::vector<std::vector<float>> soundData,
 
     // Start with the max number of voices
     for (auto i = 0; i != maxVoices; ++i) {
-        synthesiser.addVoice(new MPESamplerVoice(sound, dataModel.samplerVoiceSettings()));
+        synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
 
 }
@@ -286,7 +314,7 @@ void SamplerAudioProcessor::setNumberOfVoices(int numberOfVoices)
     newSamplerVoices.reserve((size_t)numberOfVoices);
 
     for (auto i = 0; i != numberOfVoices; ++i)
-        newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, dataModel.samplerVoiceSettings()));
+        newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, this->parameters));
 
     commands.push(SetNumVoicesCommand(move(newSamplerVoices)));
 }
@@ -299,20 +327,6 @@ void SamplerAudioProcessor::setNumberOfVoices(int numberOfVoices)
 // value won't correspond to an existing voice.
 int SamplerAudioProcessor::getNumVoices() const { return synthesiser.getNumVoices(); }
 float SamplerAudioProcessor::getPlaybackPosition(int voice) const { return playbackPositions.at((size_t)voice); }
-
-// todo: more stuff here
-void SamplerAudioProcessor::parameterChanged(const String& parameterID, float newValue)
-{
-    if (parameterID == String("Choke ON/OFF"))
-    {
-        //isChokeGroupActive = static_cast<bool> (newValue);
-
-        //For Debugging Purposes
-        /*String value;
-        value = (isChokeGroupActive == true) ? "true" : "false";
-        Logger::outputDebugString(value);*/
-    }
-}
 
 //==============================================================================
 template <typename Element>
