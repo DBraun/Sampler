@@ -4,9 +4,9 @@
               companyWebsite="https://ccrma.stanford.edu/~braun/" displaySplashScreen="1"
               projectType="audioplug" pluginAUIsSandboxSafe="1" pluginManufacturer="DIRT Design"
               pluginFormats="buildVST3,buildAU,buildStandalone" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              useAppConfig="0" addUsingNamespaceToJuceHeader="1" id="AXjiUa"
-              jucerFormatVersion="1" bundleIdentifier="com.DIRTDESIGN.Sampler"
-              pluginManufacturerCode="DIRT" pluginCode="D001" defines="PIP_JUCE_EXAMPLES_DIRECTORY=QzpcdG9vbHNcSlVDRVxleGFtcGxlcw=="
+              addUsingNamespaceToJuceHeader="1" id="AXjiUa" jucerFormatVersion="1"
+              bundleIdentifier="com.DIRTDESIGN.Sampler" pluginManufacturerCode="DIRT"
+              pluginCode="D001" defines="PIP_JUCE_EXAMPLES_DIRECTORY=QzpcdG9vbHNcSlVDRVxleGFtcGxlcw=="
               companyName="DIRT Design">
   <MAINGROUP id="QHrbIT" name="Sampler">
     <GROUP id="{6644D524-8832-8908-8EE4-3F0F233B2801}" name="Source">

@@ -5,4 +5,5 @@
 
 */
 
+#include "AppConfig.h"
 #include <juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp>
