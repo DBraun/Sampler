@@ -78,7 +78,7 @@ public:
     void setSample(std::vector<std::vector<float>> soundData, double sampleRate);
 
     // Set the sample with an absolute filepath to a wav file. Not thread-safe at all.
-    void setSample(const char* path);
+    bool setSample(const char* path);
 
     void setCentreFrequency(double centreFrequency);
 
@@ -110,7 +110,7 @@ private:
     template <typename Element>
     void process(AudioBuffer<Element>& buffer, MidiBuffer& midiMessages);
 
-    void setSample(juce::InputStream* inputStream);
+    bool setSample(juce::InputStream* inputStream);
 
     CommandFifo<SamplerAudioProcessor> commands;
 

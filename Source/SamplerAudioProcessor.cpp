@@ -45,13 +45,17 @@ void SamplerAudioProcessor::parameterChanged(const String& parameterID, float ne
     }
 }
 
-void SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
+bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
+
     if (inputStream)
     {
         inputStream->readIntoMemoryBlock(mb);
         readerFactory.reset(new MemoryAudioFormatReaderFactory(mb.getData(), mb.getSize()));
     }
-
+    else {
+        mb.reset(); return false;
+    }
+    
     while (synthesiser.getNumVoices())
     {
         synthesiser.removeVoice(0);
@@ -61,6 +65,9 @@ void SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
     AudioFormatManager manager;
     manager.registerBasicFormats();
     auto reader = readerFactory->make(manager);
+    if (reader == nullptr) {
+        mb.reset(); return false;
+    }
     jassert(reader != nullptr); // Failed to load resource!
 
     auto sound = samplerSound;
@@ -73,6 +80,9 @@ void SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
     for (auto i = 0; i != maxVoices; ++i) {
         synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
+
+    mb.reset(); return true;
+    
 }
 
 AudioProcessorValueTreeState::ParameterLayout SamplerAudioProcessor::createParameters()
@@ -248,14 +258,14 @@ void SamplerAudioProcessor::setSample(std::vector<std::vector<float>> soundData,
 }
 
 // Set the sample with an absolute path to a wav file.
-void SamplerAudioProcessor::setSample(const char* path) {
+bool SamplerAudioProcessor::setSample(const char* path) {
     auto theFile = juce::File(juce::String(path));
     if (!theFile.existsAsFile()) {
         std::cerr << "No file found at path: " << path;
-        return;
+        return false;
     }
 
-    setSample(theFile.createInputStream().get());
+    return setSample(theFile.createInputStream().get());
 }
 
 void SamplerAudioProcessor::setCentreFrequency(double centreFrequency)
