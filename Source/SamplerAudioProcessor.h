@@ -77,6 +77,9 @@ public:
     // This method is not thread-safe at all and is only meant to be used by DawDreamer.
     void setSample(std::vector<std::vector<float>> soundData, double sampleRate);
 
+    // Set the sample with an absolute filepath to a wav file. Not thread-safe at all.
+    void setSample(const char* path);
+
     void setCentreFrequency(double centreFrequency);
 
     void setLoopMode(LoopMode loopMode);
@@ -106,6 +109,8 @@ private:
     //==============================================================================
     template <typename Element>
     void process(AudioBuffer<Element>& buffer, MidiBuffer& midiMessages);
+
+    void setSample(juce::InputStream* inputStream);
 
     CommandFifo<SamplerAudioProcessor> commands;
 

@@ -27,10 +27,34 @@ SamplerAudioProcessor::SamplerAudioProcessor()
 {
     parameters.addParameterListener(IDs::centerNote, this);
 
-    if (auto inputStream = createAssetInputStream("cello.wav"))
+    setSample(createAssetInputStream("cello.wav").get());
+}
+
+SamplerAudioProcessor::~SamplerAudioProcessor() {
+    parameters.removeParameterListener(IDs::centerNote, this);
+}
+
+void SamplerAudioProcessor::parameterChanged(const String& parameterID, float newValue) {
+
+    //std::cout << "parameter changed: " << parameterID << " to " << newValue << std::endl;
+
+    if (parameterID.equalsIgnoreCase(IDs::centerNote)) {
+        float pitchInHz = MidiMessage::getMidiNoteInHertz((int)newValue);
+        dataModel.setCentreFrequencyHz(pitchInHz, nullptr);
+        this->samplerSound->setCentreFrequencyInHz(pitchInHz);
+    }
+}
+
+void SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
+    if (inputStream)
     {
         inputStream->readIntoMemoryBlock(mb);
         readerFactory.reset(new MemoryAudioFormatReaderFactory(mb.getData(), mb.getSize()));
+    }
+
+    while (synthesiser.getNumVoices())
+    {
+        synthesiser.removeVoice(0);
     }
 
     // Set up initial sample, which we load from a binary resource
@@ -48,21 +72,6 @@ SamplerAudioProcessor::SamplerAudioProcessor()
     // Start with the max number of voices
     for (auto i = 0; i != maxVoices; ++i) {
         synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
-    }
-}
-
-SamplerAudioProcessor::~SamplerAudioProcessor() {
-    parameters.removeParameterListener(IDs::centerNote, this);
-}
-
-void SamplerAudioProcessor::parameterChanged(const String& parameterID, float newValue) {
-
-    //std::cout << "parameter changed: " << parameterID << " to " << newValue << std::endl;
-
-    if (parameterID.equalsIgnoreCase(IDs::centerNote)) {
-        float pitchInHz = MidiMessage::getMidiNoteInHertz((int)newValue);
-        dataModel.setCentreFrequencyHz(pitchInHz, nullptr);
-        this->samplerSound->setCentreFrequencyInHz(pitchInHz);
     }
 }
 
@@ -236,6 +245,17 @@ void SamplerAudioProcessor::setSample(std::vector<std::vector<float>> soundData,
         synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
 
+}
+
+// Set the sample with an absolute path to a wav file.
+void SamplerAudioProcessor::setSample(const char* path) {
+    auto theFile = juce::File(juce::String(path));
+    if (!theFile.existsAsFile()) {
+        std::cerr << "No file found at path: " << path;
+        return;
+    }
+
+    setSample(theFile.createInputStream().get());
 }
 
 void SamplerAudioProcessor::setCentreFrequency(double centreFrequency)
