@@ -27,7 +27,9 @@ SamplerAudioProcessor::SamplerAudioProcessor()
 {
     parameters.addParameterListener(IDs::centerNote, this);
 
-    setSample(createAssetInputStream("cello.wav").get());
+    if (auto cello = createAssetInputStream("cello.wav")) {
+        setSample(cello.get());
+    }
 }
 
 SamplerAudioProcessor::~SamplerAudioProcessor() {
@@ -49,11 +51,12 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
 
     if (inputStream)
     {
+        mb.reset();
         inputStream->readIntoMemoryBlock(mb);
         readerFactory.reset(new MemoryAudioFormatReaderFactory(mb.getData(), mb.getSize()));
     }
     else {
-        mb.reset(); return false;
+        return false;
     }
     
     while (synthesiser.getNumVoices())
@@ -66,7 +69,7 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
     manager.registerBasicFormats();
     auto reader = readerFactory->make(manager);
     if (reader == nullptr) {
-        mb.reset(); return false;
+        return false;
     }
     jassert(reader != nullptr); // Failed to load resource!
 
@@ -81,7 +84,7 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
         synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
 
-    mb.reset(); return true;
+    return true;
     
 }
 
