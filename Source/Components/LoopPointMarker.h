@@ -56,11 +56,11 @@ private:
 
     void paint(Graphics& g) override
     {
-        g.setColour(Colours::deepskyblue);
+        g.setColour(juce::Colours::deepskyblue);
         g.fillPath(path);
 
         auto height = 20;
-        g.setColour(Colours::white);
+        g.setColour(juce::Colours::white);
         g.drawText(text, getLocalBounds().removeFromBottom(height), Justification::centred);
     }
 

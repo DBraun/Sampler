@@ -35,7 +35,7 @@ public:
 private:
     void paint(Graphics& g) override
     {
-        g.setColour(Colours::red);
+        g.setColour(juce::Colours::red);
 
         for (auto position : provider())
         {

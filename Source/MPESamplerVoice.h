@@ -374,6 +374,6 @@ private:
     double filterCutoff = 20000.;
     double filterCutoffModAmt = 0.;
 
-    dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> m_Filter;
+    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> m_Filter;
     AudioBuffer<float> m_Buffer;
 };

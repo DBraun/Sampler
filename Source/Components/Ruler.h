@@ -49,7 +49,7 @@ private:
         g.drawHorizontalLine(0, 0.0f, (float)getWidth());
         g.setColour(bg.darker());
         g.drawHorizontalLine(1, 0.0f, (float)getWidth());
-        g.setColour(Colours::lightgrey);
+        g.setColour(juce::Colours::lightgrey);
 
         auto minLog = std::ceil(std::log10(visibleRange.getVisibleRange().getLength() / maxDivisions));
         auto precision = 2 + std::abs(minLog);

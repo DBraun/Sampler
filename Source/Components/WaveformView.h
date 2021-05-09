@@ -37,12 +37,12 @@ private:
     void paint(Graphics& g) override
     {
         // Draw the waveforms
-        g.fillAll(Colours::black);
+        g.fillAll(juce::Colours::black);
         auto numChannels = thumbnail.getNumChannels();
 
         if (numChannels == 0)
         {
-            g.setColour(Colours::white);
+            g.setColour(juce::Colours::white);
             g.drawFittedText("No File Loaded", getLocalBounds(), Justification::centred, 1);
             return;
         }
@@ -85,9 +85,9 @@ private:
 
     void drawChannel(Graphics& g, int channel, juce::Rectangle<int> bounds)
     {
-        g.setGradientFill(ColourGradient(Colours::lightblue,
+        g.setGradientFill(ColourGradient(juce::Colours::lightblue,
             bounds.getTopLeft().toFloat(),
-            Colours::darkgrey,
+            juce::Colours::darkgrey,
             bounds.getBottomLeft().toFloat(),
             false));
         thumbnail.drawChannel(g,

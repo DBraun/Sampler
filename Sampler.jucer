@@ -4,7 +4,7 @@
               companyWebsite="https://ccrma.stanford.edu/~braun/" displaySplashScreen="1"
               projectType="audioplug" pluginAUIsSandboxSafe="1" pluginManufacturer="DIRT Design"
               pluginFormats="buildVST3,buildAU,buildStandalone" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              addUsingNamespaceToJuceHeader="1" id="AXjiUa" jucerFormatVersion="1"
+              addUsingNamespaceToJuceHeader="0" id="AXjiUa" jucerFormatVersion="1"
               bundleIdentifier="com.DIRTDESIGN.Sampler" pluginManufacturerCode="DIRT"
               pluginCode="D001" defines="PIP_JUCE_EXAMPLES_DIRECTORY=QzpcdG9vbHNcSlVDRVxleGFtcGxlcw=="
               companyName="DIRT Design">
