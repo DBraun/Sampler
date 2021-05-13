@@ -80,6 +80,8 @@ public:
     // Set the sample with an absolute filepath to a wav file. Not thread-safe at all.
     bool setSample(const char* path);
 
+    void setParameterRawNotifyingHost(int parameterIndex, float newValue);
+
     void setCentreFrequency(double centreFrequency);
 
     void setLoopMode(LoopMode loopMode);
@@ -130,7 +132,8 @@ private:
     // with the real state of the processor.
     SpinLock commandQueueMutex;
 
-    enum { maxVoices = 20 };
+    enum { maxVoices = 30 };
+    int m_numVoices = 20;  // never let m_numVoices go above maxVoices;
 
     // This is used for visualising the current playback position of each voice.
     // It stores values in seconds units.

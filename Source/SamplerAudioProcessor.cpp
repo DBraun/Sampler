@@ -36,6 +36,14 @@ SamplerAudioProcessor::~SamplerAudioProcessor() {
     parameters.removeParameterListener(IDs::centerNote, this);
 }
 
+void SamplerAudioProcessor::setParameterRawNotifyingHost(int parameterIndex, float newValue) {
+    if (auto* param = getParameters()[parameterIndex])
+    {
+        newValue = ((RangedAudioParameter*)param)->convertTo0to1(newValue);
+        this->setParameterNotifyingHost(parameterIndex, newValue);
+    }
+}
+
 void SamplerAudioProcessor::parameterChanged(const String& parameterID, float newValue) {
 
     //std::cout << "parameter changed: " << parameterID << " to " << newValue << std::endl;
@@ -59,10 +67,7 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
         return false;
     }
     
-    while (synthesiser.getNumVoices())
-    {
-        synthesiser.removeVoice(0);
-    }
+    synthesiser.clearVoices();
 
     // Set up initial sample, which we load from a binary resource
     AudioFormatManager manager;
@@ -80,7 +85,7 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
     sound->setSample(move(sample));
 
     // Start with the max number of voices
-    for (auto i = 0; i != maxVoices; ++i) {
+    for (auto i = 0; i != m_numVoices; ++i) {
         synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
 
@@ -221,9 +226,9 @@ void SamplerAudioProcessor::setSample(std::unique_ptr<AudioFormatReaderFactory> 
     // we transfer ownership across to the audio thread.
     auto loadedSamplerSound = samplerSound;
     std::vector<std::unique_ptr<MPESamplerVoice>> newSamplerVoices;
-    newSamplerVoices.reserve(maxVoices);
+    newSamplerVoices.reserve(m_numVoices);
 
-    for (auto i = 0; i != maxVoices; ++i)
+    for (auto i = 0; i != m_numVoices; ++i)
         newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, this->parameters));
 
     if (fact == nullptr)
@@ -242,10 +247,7 @@ void SamplerAudioProcessor::setSample(std::unique_ptr<AudioFormatReaderFactory> 
 
 void SamplerAudioProcessor::setSample(std::vector<std::vector<float>> soundData, double sampleRate) {
     
-    while (synthesiser.getNumVoices())
-    {
-        synthesiser.removeVoice(0);
-    }
+    synthesiser.clearVoices();
 
     auto sound = samplerSound;
     auto sample = std::unique_ptr<Sample>(new Sample(soundData, sampleRate));
@@ -254,7 +256,7 @@ void SamplerAudioProcessor::setSample(std::vector<std::vector<float>> soundData,
     sound->setSample(move(sample));
 
     // Start with the max number of voices
-    for (auto i = 0; i != maxVoices; ++i) {
+    for (auto i = 0; i != m_numVoices; ++i) {
         synthesiser.addVoice(new MPESamplerVoice(sound, this->parameters));
     }
 
@@ -356,12 +358,12 @@ void SamplerAudioProcessor::setNumberOfVoices(int numberOfVoices)
         std::vector<std::unique_ptr<MPESamplerVoice>> newVoices;
     };
 
-    numberOfVoices = min((int)maxVoices, numberOfVoices);
+    m_numVoices = min((int)maxVoices, numberOfVoices);
     auto loadedSamplerSound = samplerSound;
     std::vector<std::unique_ptr<MPESamplerVoice>> newSamplerVoices;
-    newSamplerVoices.reserve((size_t)numberOfVoices);
+    newSamplerVoices.reserve((size_t)m_numVoices);
 
-    for (auto i = 0; i != numberOfVoices; ++i)
+    for (auto i = 0; i != m_numVoices; ++i)
         newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, this->parameters));
 
     commands.push(SetNumVoicesCommand(move(newSamplerVoices)));

@@ -57,21 +57,20 @@ public:
 
 
         // NB: The line below is commented out because of https://forum.juce.com/t/samplerplugin-demo-no-audio/32584
-        //level    .setTargetValue (currentlyPlayingNote.pressure.asUnsignedFloat());
-        level.setTargetValue(currentlyPlayingNote.noteOnVelocity.asUnsignedFloat());
+        //currentlyPlayingNote.pressure.asUnsignedFloat());
+        //currentlyPlayingNote.noteOnVelocity.asUnsignedFloat());
         frequency.setTargetValue(currentlyPlayingNote.getFrequencyInHertz());
 
         auto loopPoints = samplerSound->getLoopPointsInSeconds();
         loopBegin.setTargetValue(loopPoints.getStart() * samplerSound->getSample()->getSampleRate());
         loopEnd.setTargetValue(loopPoints.getEnd() * samplerSound->getSample()->getSampleRate());
 
-        for (auto smoothed : { &level, &frequency, &loopBegin, &loopEnd })
+        for (auto smoothed : { &frequency, &loopBegin, &loopEnd })
             smoothed->reset(currentSampleRate, smoothingLengthInSeconds);
 
         currentSamplePos = 0.0;
         tailOff = 0.0;
 
-        // todo: should these be here?
         ampEnv.noteOn();
         filterEnv.noteOn();
     }
@@ -80,7 +79,6 @@ public:
     {
         jassert(currentlyPlayingNote.keyState == MPENote::off);
 
-        // todo: should these be here?
         ampEnv.noteOff();
         filterEnv.noteOff();
 
@@ -92,7 +90,7 @@ public:
 
     void notePressureChanged() override
     {
-        level.setTargetValue(currentlyPlayingNote.pressure.asUnsignedFloat());
+        //currentlyPlayingNote.pressure.asUnsignedFloat();
     }
 
     void notePitchbendChanged() override
@@ -201,17 +199,16 @@ private:
         Element* outR,
         size_t writePos)
     {
-        auto currentLevel = level.getNextValue();  // based on note velocity
         auto currentFrequency = frequency.getNextValue();  // based on note pitch
         auto currentLoopBegin = loopBegin.getNextValue();
         auto currentLoopEnd = loopEnd.getNextValue();
 
-        if (isTailingOff())
-        {
-            currentLevel *= tailOff;
-            tailOff *= 0.9999;
+        bool ampActive = *valueTreeState.getRawParameterValue(IDs::ampActive);
+        float ampEnvLast = ampEnv.getNextSample();
 
-            if (tailOff < 0.005)
+        if (ampActive && isTailingOff())
+        {
+            if (ampEnvLast < 0.001)
             {
                 stopNote();
                 return false;
@@ -235,8 +232,8 @@ private:
         m_Buffer.applyGain(currentlyPlayingNote.noteOnVelocity.asUnsignedFloat());
 
         // apply amplitude
-        if (*valueTreeState.getRawParameterValue(IDs::ampActive)) {
-            m_Buffer.applyGain(ampEnv.getNextSample());
+        if (ampActive) {
+            m_Buffer.applyGain(ampEnvLast);
         }
 
         float cutoff = filterCutoff + filterCutoffModAmt*filterEnv.getNextSample();
@@ -359,7 +356,6 @@ private:
     AudioProcessorValueTreeState& valueTreeState;  // from the SamplerAudioProcessor
 
     std::shared_ptr<const MPESamplerSound> samplerSound;
-    SmoothedValue<double> level{ 0 };
     SmoothedValue<double> frequency{ 0 };
     SmoothedValue<double> loopBegin;
     SmoothedValue<double> loopEnd;
