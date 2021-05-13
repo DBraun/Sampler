@@ -36,6 +36,16 @@ SamplerAudioProcessor::~SamplerAudioProcessor() {
     parameters.removeParameterListener(IDs::centerNote, this);
 }
 
+float SamplerAudioProcessor::getParameterRaw(int parameterIndex) {
+    if (auto* param = getParameters()[parameterIndex])
+    {
+        float val01 = ((RangedAudioParameter*)param)->getValue();
+        float convertedVal = ((RangedAudioParameter*)param)->convertFrom0to1(val01);
+        return convertedVal;
+    }
+    return 0.f;
+}
+
 void SamplerAudioProcessor::setParameterRawNotifyingHost(int parameterIndex, float newValue) {
     if (auto* param = getParameters()[parameterIndex])
     {

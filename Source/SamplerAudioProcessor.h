@@ -80,6 +80,8 @@ public:
     // Set the sample with an absolute filepath to a wav file. Not thread-safe at all.
     bool setSample(const char* path);
 
+    float getParameterRaw(int parameterIndex);
+
     void setParameterRawNotifyingHost(int parameterIndex, float newValue);
 
     void setCentreFrequency(double centreFrequency);
