@@ -17,7 +17,9 @@
 
 #include "SamplerAudioProcessor.h"
 #include "Components/MPESettingsComponent.h"
+#ifndef SAMPLER_SKIP_UI
 #include "Components/MainSamplerView.h"
+#endif
 #include "ProcessorState.h"
 
 using namespace std;
@@ -73,7 +75,8 @@ private:
 
     TabbedComponent tabbedComponent{ TabbedButtonBar::Orientation::TabsAtTop };
     MPESettingsComponent settingsComponent{ dataModel.mpeSettings(), undoManager };
+#ifndef SAMPLER_SKIP_UI
     MainSamplerView mainSamplerView;
-
+#endif
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SamplerAudioProcessorEditor)
 };

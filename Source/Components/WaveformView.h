@@ -100,7 +100,7 @@ private:
 
     DataModel dataModel;
     VisibleRangeDataModel visibleRange;
-    AudioThumbnailCache thumbnailCache;
-    AudioThumbnail thumbnail;
+    juce::AudioThumbnailCache thumbnailCache;
+    juce::AudioThumbnail thumbnail;
     int64 currentHashCode = 0;
 };

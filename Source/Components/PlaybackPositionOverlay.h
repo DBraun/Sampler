@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "DataModels/VisibleRangeDataModel.h"
+#include "../DataModels/VisibleRangeDataModel.h"
 
 class PlaybackPositionOverlay : public Component,
     private Timer,

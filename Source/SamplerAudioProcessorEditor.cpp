@@ -21,8 +21,9 @@ SamplerAudioProcessorEditor::SamplerAudioProcessorEditor(SamplerAudioProcessor& 
     : AudioProcessorEditor(&p),
     dataModel(model),
     formatManager(afManager),
-    samplerAudioProcessor(p),
-    mainSamplerView(dataModel,
+    samplerAudioProcessor(p)
+#ifndef SAMPLER_SKIP_UI
+,mainSamplerView(dataModel,
         [&p]
         {
             std::vector<float> ret;
@@ -36,6 +37,7 @@ SamplerAudioProcessorEditor::SamplerAudioProcessorEditor(SamplerAudioProcessor& 
         },
             undoManager,
             vts)
+#endif
 {
     dataModel.addListener(*this);
     mpeSettings.addListener(*this);
@@ -47,8 +49,9 @@ SamplerAudioProcessorEditor::SamplerAudioProcessorEditor(SamplerAudioProcessor& 
     auto lookFeel = dynamic_cast<LookAndFeel_V4*> (&getLookAndFeel());
     auto bg = lookFeel->getCurrentColourScheme()
         .getUIColour(LookAndFeel_V4::ColourScheme::UIColour::widgetBackground);
-
+#ifndef SAMPLER_SKIP_UI
     tabbedComponent.addTab("Sample Editor", bg, &mainSamplerView, false);
+#endif
     tabbedComponent.addTab("MPE Settings", bg, &settingsComponent, false);
 
     mpeSettings.setSynthVoices(state.synthVoices, nullptr);
