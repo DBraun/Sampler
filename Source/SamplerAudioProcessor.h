@@ -108,6 +108,7 @@ public:
     float getPlaybackPosition(int voice) const;
 
     void parameterChanged(const String& parameterID, float newValue);
+    void reset();
 
 private:
     //==============================================================================

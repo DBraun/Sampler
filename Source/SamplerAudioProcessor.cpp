@@ -65,6 +65,10 @@ void SamplerAudioProcessor::parameterChanged(const String& parameterID, float ne
     }
 }
 
+void SamplerAudioProcessor::reset() {
+    synthesiser.turnOffAllVoices(false);
+}
+
 bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
 
     if (inputStream)
