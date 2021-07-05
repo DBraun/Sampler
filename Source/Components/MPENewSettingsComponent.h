@@ -17,7 +17,7 @@
 
 #include "../DataModels/VisibleRangeDataModel.h"
 
-class MPENewSettingsComponent final : public Component,
+class MPENewSettingsComponent final : public juce::Component,
     private MPESettingsDataModel::Listener
 {
 public:

@@ -53,7 +53,6 @@ using juce::CodeEditorComponent;
 using juce::Colour;
 using juce::ColourGradient;
 using juce::ComboBox;
-using juce::Component;
 using juce::Drawable;
 using juce::File;
 using juce::FileBrowserComponent;

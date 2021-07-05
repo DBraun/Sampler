@@ -19,7 +19,7 @@
 #include "MPENewSettingsComponent.h"
 
 //==============================================================================
-class MPESettingsComponent final : public Component,
+class MPESettingsComponent final : public juce::Component,
     private MPESettingsDataModel::Listener
 {
 public:

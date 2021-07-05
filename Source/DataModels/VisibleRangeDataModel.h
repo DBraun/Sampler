@@ -117,7 +117,7 @@ private:
 
 namespace
 {
-    void initialiseComboBoxWithConsecutiveIntegers(Component& owner,
+    void initialiseComboBoxWithConsecutiveIntegers(juce::Component& owner,
         ComboBox& comboBox,
         Label& label,
         int firstValue,
