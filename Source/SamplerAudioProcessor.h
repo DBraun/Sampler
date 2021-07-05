@@ -66,9 +66,9 @@ public:
     void setStateInformation(const void*, int) override;
 
     //==============================================================================
-    void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi) override;
+    void processBlock(juce::AudioBuffer<float>& buffer, MidiBuffer& midi) override;
 
-    void processBlock(AudioBuffer<double>& buffer, MidiBuffer& midi) override;
+    void processBlock(juce::AudioBuffer<double>& buffer, MidiBuffer& midi) override;
 
     // These should be called from the GUI thread, and will block until the
     // command buffer has enough room to accept a command.
@@ -113,7 +113,7 @@ public:
 private:
     //==============================================================================
     template <typename Element>
-    void process(AudioBuffer<Element>& buffer, MidiBuffer& midiMessages);
+    void process(juce::AudioBuffer<Element>& buffer, MidiBuffer& midiMessages);
 
     bool setSample(juce::InputStream* inputStream);
 

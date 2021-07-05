@@ -44,12 +44,12 @@ private:
 
         newPath.startNewSubPath(bounds.getBottomLeft().toFloat());
         newPath.lineTo(bounds.getBottomRight().toFloat());
-        Point<float> apex(static_cast<float> (bounds.getX() + (bounds.getWidth() / 2)),
+        juce::Point<float> apex(static_cast<float> (bounds.getX() + (bounds.getWidth() / 2)),
             static_cast<float> (bounds.getBottom() - triHeight));
         newPath.lineTo(apex);
         newPath.closeSubPath();
 
-        newPath.addLineSegment(Line<float>(apex, Point<float>(apex.getX(), 0)), 1);
+        newPath.addLineSegment(Line<float>(apex, juce::Point<float>(apex.getX(), 0)), 1);
 
         path = newPath;
     }

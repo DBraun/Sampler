@@ -98,14 +98,14 @@ public:
     void noteTimbreChanged()   override {}
     void noteKeyStateChanged() override {}
 
-    void renderNextBlock(AudioBuffer<float>& outputBuffer,
+    void renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         int startSample,
         int numSamples) override
     {
         render(outputBuffer, startSample, numSamples);
     }
 
-    void renderNextBlock(AudioBuffer<double>& outputBuffer,
+    void renderNextBlock(juce::AudioBuffer<double>& outputBuffer,
         int startSample,
         int numSamples) override
     {
@@ -160,7 +160,7 @@ private:
 
 
     template <typename Element>
-    void render(AudioBuffer<Element>& outputBuffer, int startSample, int numSamples)
+    void render(juce::AudioBuffer<Element>& outputBuffer, int startSample, int numSamples)
     {
         jassert(samplerSound->getSample() != nullptr);
 
@@ -368,5 +368,5 @@ private:
     double filterCutoffModAmt = 0.;
 
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> m_Filter;
-    AudioBuffer<float> m_Buffer;
+    juce::AudioBuffer<float> m_Buffer;
 };

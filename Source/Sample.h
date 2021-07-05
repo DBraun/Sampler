@@ -54,13 +54,13 @@ public:
 
     double getSampleRate() const { return m_sourceSampleRate; }
     int getLength() const { return m_length; }
-    const AudioBuffer<float>& getBuffer() const { return m_data; }
+    const juce::AudioBuffer<float>& getBuffer() const { return m_data; }
 
 private:
     double m_sourceSampleRate;
     int m_length;
-    AudioBuffer<float> m_temp_data;
-    AudioBuffer<float> m_data;
+    juce::AudioBuffer<float> m_temp_data;
+    juce::AudioBuffer<float> m_data;
 
     LagrangeInterpolator m_interpolator;
 

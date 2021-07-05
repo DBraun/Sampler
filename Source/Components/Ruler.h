@@ -65,8 +65,8 @@ private:
             std::ostringstream outStream;
             outStream << std::setprecision(roundToInt(precision)) << time;
 
-            const auto bounds = juce::Rectangle<int>(Point<int>(roundToInt(xPos) + 3, 0),
-                Point<int>(roundToInt(xPos + minDivisionWidth), getHeight()));
+            const auto bounds = juce::Rectangle<int>(juce::Point<int>(roundToInt(xPos) + 3, 0),
+                juce::Point<int>(roundToInt(xPos + minDivisionWidth), getHeight()));
 
             g.drawText(outStream.str(), bounds, Justification::centredLeft, false);
 

@@ -191,12 +191,12 @@ void SamplerAudioProcessor::getStateInformation(MemoryBlock&) {}
 void SamplerAudioProcessor::setStateInformation(const void*, int) {}
 
 //==============================================================================
-void SamplerAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi)
+void SamplerAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, MidiBuffer& midi)
 {
     process(buffer, midi);
 }
 
-void SamplerAudioProcessor::processBlock(AudioBuffer<double>& buffer, MidiBuffer& midi)
+void SamplerAudioProcessor::processBlock(juce::AudioBuffer<double>& buffer, MidiBuffer& midi)
 {
     process(buffer, midi);
 }
@@ -394,7 +394,7 @@ float SamplerAudioProcessor::getPlaybackPosition(int voice) const { return playb
 
 //==============================================================================
 template <typename Element>
-void SamplerAudioProcessor::process(AudioBuffer<Element>& buffer, MidiBuffer& midiMessages)
+void SamplerAudioProcessor::process(juce::AudioBuffer<Element>& buffer, MidiBuffer& midiMessages)
 {
     // Try to acquire a lock on the command queue.
     // If we were successful, we pop all pending commands off the queue and
