@@ -29,10 +29,10 @@ namespace juce
         return true;
     }
 
-    bool operator!= (const MPEZoneLayout& a, const MPEZoneLayout& b)
-    {
-        return !(a == b);
-    }
+//    bool operator!= (const MPEZoneLayout& a, const MPEZoneLayout& b)
+//    {
+//        return !(a == b);
+//    }
 
 } // namespace juce
 
