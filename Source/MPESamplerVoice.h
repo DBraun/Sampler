@@ -29,7 +29,7 @@ public:
         m_Buffer.setSize(2, 1, false, true, false);
     }
 
-    void setCurrentSampleRate(double newRate) {
+    void setCurrentSampleRate(double newRate) override {
 
         MPESynthesiserVoice::setCurrentSampleRate(newRate);
 

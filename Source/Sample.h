@@ -38,9 +38,9 @@ public:
     }
 
     Sample(std::vector<std::vector<float>> soundData, double sr) : m_sourceSampleRate{ sr },
-        m_length(soundData.at(0).size()) {
+        m_length((int)soundData.at(0).size()) {
 
-        int numChans = soundData.size();
+        int numChans = (int) soundData.size();
         int numSamples = m_length;
 
         m_temp_data.setSize(numChans, numSamples, false, true, false);
