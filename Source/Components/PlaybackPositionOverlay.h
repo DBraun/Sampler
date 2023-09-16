@@ -17,7 +17,7 @@
 
 #include "../DataModels/VisibleRangeDataModel.h"
 
-class PlaybackPositionOverlay : public Component,
+class PlaybackPositionOverlay : public juce::Component,
     private Timer,
     private VisibleRangeDataModel::Listener
 {

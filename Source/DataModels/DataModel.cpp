@@ -50,7 +50,7 @@ std::unique_ptr<AudioFormatReader> DataModel::getSampleReader() const
 void DataModel::setSampleReader(std::unique_ptr<AudioFormatReaderFactory> readerFactory,
     UndoManager* undoManager)
 {
-    sampleReader.setValue(move(readerFactory), undoManager);
+    sampleReader.setValue(std::move(readerFactory), undoManager);
     setLoopPointsSeconds(Range<double>(0, getSampleLengthSeconds()).constrainRange(loopPointsSeconds),
         undoManager);
 }

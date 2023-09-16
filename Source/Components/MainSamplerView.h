@@ -22,7 +22,7 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 
-class MainSamplerView : public Component,
+class MainSamplerView : public juce::Component,
     private DataModel::Listener,
     private ChangeListener,
     public ValueTree::Listener
@@ -33,7 +33,7 @@ public:
         UndoManager& um,
         AudioProcessorValueTreeState& vts)
         : dataModel(model),
-        waveformEditor(dataModel, move(provider), um),
+        waveformEditor(dataModel, std::move(provider), um),
         undoManager(um),
         valueTreeState(vts)
     {

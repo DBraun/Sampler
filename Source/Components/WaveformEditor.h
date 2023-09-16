@@ -19,7 +19,7 @@
 #include "LoopPointsOverlay.h"
 #include "Ruler.h"
 
-class WaveformEditor : public Component,
+class WaveformEditor : public juce::Component,
     private DataModel::Listener
 {
 public:
@@ -28,7 +28,7 @@ public:
         UndoManager& undoManager)
         : dataModel(model),
         waveformView(model, visibleRange),
-        playbackOverlay(visibleRange, move(provider)),
+        playbackOverlay(visibleRange, std::move(provider)),
         loopPoints(dataModel, visibleRange, undoManager),
         ruler(visibleRange)
     {

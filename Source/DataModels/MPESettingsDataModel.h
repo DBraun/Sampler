@@ -39,8 +39,6 @@ public:
 
     MPESettingsDataModel(const MPESettingsDataModel& other);
 
-    MPESettingsDataModel& operator= (const MPESettingsDataModel& other);
-
     int getSynthVoices() const;
 
     void setSynthVoices(int value, UndoManager* undoManager);

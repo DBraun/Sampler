@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT name="Sampler" version="0.1.0" userNotes="Sampler audio plugin."
+<JUCERPROJECT name="Sampler" version="0.1.1" userNotes="Sampler audio plugin."
               companyWebsite="https://ccrma.stanford.edu/~braun/" displaySplashScreen="1"
               projectType="audioplug" pluginAUIsSandboxSafe="1" pluginManufacturer="DIRT Design"
               pluginFormats="buildVST3,buildAU,buildStandalone" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"

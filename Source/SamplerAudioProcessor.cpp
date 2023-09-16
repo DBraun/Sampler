@@ -96,7 +96,7 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
     auto sample = std::unique_ptr<Sample>(new Sample(*reader, 10.0));
     auto lengthInSeconds = sample->getLength() / sample->getSampleRate();
     sound->setLoopPointsInSeconds({ lengthInSeconds * 0.1, lengthInSeconds * 0.9 });
-    sound->setSample(move(sample));
+    sound->setSample(std::move(sample));
 
     // Start with the max number of voices
     for (auto i = 0; i != m_numVoices; ++i) {
@@ -183,7 +183,7 @@ double SamplerAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 int SamplerAudioProcessor::getNumPrograms() { return 1; }
 int SamplerAudioProcessor::getCurrentProgram() { return 0; }
 void SamplerAudioProcessor::setCurrentProgram(int) {}
-const String SamplerAudioProcessor::getProgramName(int) { return {}; }
+const String SamplerAudioProcessor::getProgramName(int) { return { "None" }; }
 void SamplerAudioProcessor::changeProgramName(int, const String&) {}
 
 //==============================================================================
@@ -218,7 +218,7 @@ void SamplerAudioProcessor::setSample(std::unique_ptr<AudioFormatReaderFactory> 
 
         void operator() (SamplerAudioProcessor& proc)
         {
-            proc.readerFactory = move(readerFactory);
+            proc.readerFactory = std::move(readerFactory);
             auto sound = proc.samplerSound;
             sound->setSample(std::move(sample));
             auto numberOfVoices = proc.synthesiser.getNumVoices();
@@ -247,15 +247,15 @@ void SamplerAudioProcessor::setSample(std::unique_ptr<AudioFormatReaderFactory> 
 
     if (fact == nullptr)
     {
-        commands.push(SetSampleCommand(move(fact),
+        commands.push(SetSampleCommand(std::move(fact),
             nullptr,
-            move(newSamplerVoices)));
+            std::move(newSamplerVoices)));
     }
     else if (auto reader = fact->make(formatManager))
     {
-        commands.push(SetSampleCommand(move(fact),
+        commands.push(SetSampleCommand(std::move(fact),
             std::unique_ptr<Sample>(new Sample(*reader, 10.0)),
-            move(newSamplerVoices)));
+            std::move(newSamplerVoices)));
     }
 }
 
@@ -267,7 +267,7 @@ void SamplerAudioProcessor::setSample(std::vector<std::vector<float>> soundData,
     auto sample = std::unique_ptr<Sample>(new Sample(soundData, sampleRate));
     auto lengthInSeconds = sample->getLength() / sample->getSampleRate();
     sound->setLoopPointsInSeconds({ lengthInSeconds * 0.1, lengthInSeconds * 0.9 });
-    sound->setSample(move(sample));
+    sound->setSample(std::move(sample));
 
     // Start with the max number of voices
     for (auto i = 0; i != m_numVoices; ++i) {
@@ -380,7 +380,7 @@ void SamplerAudioProcessor::setNumberOfVoices(int numberOfVoices)
     for (auto i = 0; i != m_numVoices; ++i)
         newSamplerVoices.emplace_back(new MPESamplerVoice(loadedSamplerSound, this->parameters));
 
-    commands.push(SetNumVoicesCommand(move(newSamplerVoices)));
+    commands.push(SetNumVoicesCommand(std::move(newSamplerVoices)));
 }
 
 // These accessors are just for an 'overview' and won't give the exact

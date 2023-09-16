@@ -77,7 +77,7 @@ private:
         }
     }
 
-    bool isLegacyModeValid() const
+    bool isLegacyModeValid()
     {
         if (!areLegacyModeParametersValid())
         {
@@ -118,13 +118,14 @@ private:
         return getFirstChannel() <= getLastChannel();
     }
 
-    void handleInvalidLegacyModeParameters() const
+    void handleInvalidLegacyModeParameters()
     {
-        AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
-            "Invalid legacy mode channel layout",
-            "Cannot set legacy mode start/end channel:\n"
-            "The end channel must not be less than the start channel!",
-            "Got it");
+        auto options = juce::MessageBoxOptions::makeOptionsOk (AlertWindow::WarningIcon,
+                                                         "Invalid legacy mode channel layout",
+                                                            "Cannot set legacy mode start/end channel:\n"
+                                                            "The end channel must not be less than the start channel!",
+                                                            "Got it");
+           messageBox = AlertWindow::showScopedAsync (options, nullptr);
     }
 
     MPESettingsDataModel dataModel;
@@ -136,4 +137,5 @@ private:
         legacyPitchbendRangeLabel{ {}, "Pitchbend range (semitones)" };
 
     UndoManager* undoManager;
+    juce::ScopedMessageBox messageBox;
 };

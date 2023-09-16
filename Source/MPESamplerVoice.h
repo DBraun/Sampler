@@ -52,10 +52,7 @@ public:
         jassert(currentlyPlayingNote.keyState == MPENote::keyDown
             || currentlyPlayingNote.keyState == MPENote::keyDownAndSustained);
 
-
-        // NB: The line below is commented out because of https://forum.juce.com/t/samplerplugin-demo-no-audio/32584
-        //currentlyPlayingNote.pressure.asUnsignedFloat());
-        //currentlyPlayingNote.noteOnVelocity.asUnsignedFloat());
+        level.setTargetValue (currentlyPlayingNote.noteOnVelocity.asUnsignedFloat());
         frequency.setTargetValue(currentlyPlayingNote.getFrequencyInHertz());
 
         auto loopPoints = samplerSound->getLoopPointsInSeconds();
@@ -65,6 +62,7 @@ public:
         for (auto smoothed : { &frequency, &loopBegin, &loopEnd })
             smoothed->reset(currentSampleRate, smoothingLengthInSeconds);
 
+        previousPressure = currentlyPlayingNote.pressure.asUnsignedFloat();
         currentSamplePos = 0.0;
         tailOff = 0.0;
 
@@ -79,7 +77,7 @@ public:
         ampEnv.noteOff();
         filterEnv.noteOff();
 
-        if (allowTailOff && tailOff == 0.0)
+        if (allowTailOff && juce::approximatelyEqual (tailOff, 0.0))
             tailOff = 1.0;
         else
             stopNote();
@@ -87,8 +85,10 @@ public:
 
     void notePressureChanged() override
     {
-        //currentlyPlayingNote.pressure.asUnsignedFloat();
-    }
+        const auto currentPressure = static_cast<double> (currentlyPlayingNote.pressure.asUnsignedFloat());
+         const auto deltaPressure = currentPressure - previousPressure;
+         level.setTargetValue (juce::jlimit (0.0, 1.0, level.getCurrentValue() + deltaPressure));
+         previousPressure = currentPressure;    }
 
     void notePitchbendChanged() override
     {
@@ -273,7 +273,7 @@ private:
 
     bool isTailingOff() const
     {
-        return tailOff != 0.0;
+        return ! juce::approximatelyEqual (tailOff, 0.0);
     }
 
     void stopNote()
@@ -353,9 +353,11 @@ private:
     AudioProcessorValueTreeState& valueTreeState;  // from the SamplerAudioProcessor
 
     std::shared_ptr<const MPESamplerSound> samplerSound;
+    SmoothedValue<double> level { 0 };
     SmoothedValue<double> frequency{ 0 };
     SmoothedValue<double> loopBegin;
     SmoothedValue<double> loopEnd;
+    double previousPressure { 0 };
     double currentSamplePos{ 0 };
     double tailOff{ 0 };
     Direction currentDirection{ Direction::forward };

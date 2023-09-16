@@ -17,7 +17,7 @@
 
 #include "LoopPointMarker.h"
 
-class LoopPointsOverlay : public Component,
+class LoopPointsOverlay : public juce::Component,
     private DataModel::Listener,
     private VisibleRangeDataModel::Listener
 {

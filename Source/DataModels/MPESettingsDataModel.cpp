@@ -15,28 +15,6 @@
 
 #include "MPESettingsDataModel.h"
 
-namespace juce
-{
-
-    bool operator== (const MPEZoneLayout& a, const MPEZoneLayout& b)
-    {
-        if (a.getLowerZone() != b.getLowerZone())
-            return false;
-
-        if (a.getUpperZone() != b.getUpperZone())
-            return false;
-
-        return true;
-    }
-
-//    bool operator!= (const MPEZoneLayout& a, const MPEZoneLayout& b)
-//    {
-//        return !(a == b);
-//    }
-
-} // namespace juce
-
-
 MPESettingsDataModel::MPESettingsDataModel()
     : MPESettingsDataModel(ValueTree(IDs::MPE_SETTINGS))
 {}
@@ -58,13 +36,6 @@ MPESettingsDataModel::MPESettingsDataModel(const ValueTree& vt)
 MPESettingsDataModel::MPESettingsDataModel(const MPESettingsDataModel& other)
     : MPESettingsDataModel(other.valueTree)
 {}
-
-MPESettingsDataModel& MPESettingsDataModel::operator= (const MPESettingsDataModel& other)
-{
-    auto copy(other);
-    swap(copy);
-    return *this;
-}
 
 int MPESettingsDataModel::getSynthVoices() const
 {

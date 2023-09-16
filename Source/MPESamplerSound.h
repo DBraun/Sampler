@@ -26,7 +26,7 @@ class MPESamplerSound final
 public:
     void setSample(std::unique_ptr<Sample> value)
     {
-        sample = move(value);
+        sample = std::move(value);
         setLoopPointsInSeconds(loopPoints);
     }
 
