@@ -1,6 +1,6 @@
 # Sampler
 
-This is a **work-in-progress** improvement of JUCE's [SamplerPluginDemo](https://github.com/juce-framework/JUCE/blob/90e8da0cfb54ac593cdbed74c3d0c9b09bad3a9f/examples/Plugins/SamplerPluginDemo.h).
+This is a **work-in-progress** improvement of JUCE's [SamplerPluginDemo](https://github.com/juce-framework/JUCE/blob/28414a6af81ccb8bca32b1854cb35aca50d905da/examples/Plugins/SamplerPluginDemo.h).
 
 ## License
 
