@@ -50,7 +50,8 @@ void SamplerAudioProcessor::setParameterRawNotifyingHost(int parameterIndex, flo
     if (auto* param = getParameters()[parameterIndex])
     {
         newValue = ((RangedAudioParameter*)param)->convertTo0to1(newValue);
-        this->setParameterNotifyingHost(parameterIndex, newValue);
+        // JUCE 8: setParameterNotifyingHost removed, use setValueNotifyingHost on parameter
+        param->setValueNotifyingHost(newValue);
     }
 }
 
