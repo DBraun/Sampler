@@ -17,7 +17,7 @@
 
 #include "MPESettingsDataModel.h"
 
-class DataModel : private ValueTree::Listener
+class DataModel final : private ValueTree::Listener
 {
 public:
     class Listener

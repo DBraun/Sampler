@@ -24,7 +24,7 @@
 
 using namespace std;
 
-class SamplerAudioProcessorEditor : public AudioProcessorEditor,
+class SamplerAudioProcessorEditor final : public AudioProcessorEditor,
     public FileDragAndDropTarget,
     private DataModel::Listener,
     private MPESettingsDataModel::Listener

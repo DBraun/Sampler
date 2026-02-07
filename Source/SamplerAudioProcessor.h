@@ -28,7 +28,7 @@
 #include "CommandFifo.h"
 
 
-class SamplerAudioProcessor : public AudioProcessor, public AudioProcessorValueTreeState::Listener
+class SamplerAudioProcessor final : public AudioProcessor, public AudioProcessorValueTreeState::Listener
 {
 
 public:
@@ -119,7 +119,6 @@ private:
 
     CommandFifo<SamplerAudioProcessor> commands;
 
-    MemoryBlock mb;
     std::unique_ptr<AudioFormatReaderFactory> readerFactory;
     std::shared_ptr<MPESamplerSound> samplerSound = std::make_shared<MPESamplerSound>();
     MPESynthesiser synthesiser;

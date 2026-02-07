@@ -15,7 +15,7 @@
 
 #pragma once
 
-class LoopPointMarker : public juce::Component
+class LoopPointMarker final : public juce::Component
 {
 public:
     using MouseCallback = std::function<void(LoopPointMarker&, const MouseEvent&)>;

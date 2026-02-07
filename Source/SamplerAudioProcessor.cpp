@@ -74,9 +74,9 @@ bool SamplerAudioProcessor::setSample(juce::InputStream* inputStream) {
 
     if (inputStream)
     {
-        mb.reset();
+        MemoryBlock mb;
         inputStream->readIntoMemoryBlock(mb);
-        readerFactory.reset(new MemoryAudioFormatReaderFactory(mb.getData(), mb.getSize()));
+        readerFactory = std::make_unique<MemoryAudioFormatReaderFactory>(std::move(mb));
     }
     else {
         return false;

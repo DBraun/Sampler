@@ -19,7 +19,7 @@
 #include "LoopPointsOverlay.h"
 #include "Ruler.h"
 
-class WaveformEditor : public juce::Component,
+class WaveformEditor final : public juce::Component,
     private DataModel::Listener
 {
 public:

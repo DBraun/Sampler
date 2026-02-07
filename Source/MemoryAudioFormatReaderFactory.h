@@ -18,17 +18,17 @@
 #include "Misc.h"
 #include "FileAudioFormatReaderFactory.h"
 
-class MemoryAudioFormatReaderFactory : public AudioFormatReaderFactory
+class MemoryAudioFormatReaderFactory final : public AudioFormatReaderFactory
 {
 public:
-    MemoryAudioFormatReaderFactory(const void* sampleDataIn, size_t dataSizeIn)
-        : sampleData(sampleDataIn),
-        dataSize(dataSizeIn)
-    {}
+    explicit MemoryAudioFormatReaderFactory(MemoryBlock mb)
+        : memoryBlock(std::make_shared<MemoryBlock>(std::move(mb)))
+    {
+    }
 
     std::unique_ptr<AudioFormatReader> make(AudioFormatManager& manager) const override
     {
-        return makeAudioFormatReader(manager, sampleData, dataSize);
+        return makeAudioFormatReader(manager, memoryBlock->getData(), memoryBlock->getSize());
     }
 
     std::unique_ptr<AudioFormatReaderFactory> clone() const override
@@ -37,6 +37,5 @@ public:
     }
 
 private:
-    const void* sampleData;
-    size_t dataSize;
+    std::shared_ptr<MemoryBlock> memoryBlock;
 };

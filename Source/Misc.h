@@ -95,7 +95,7 @@ struct Command
 };
 
 template <typename Proc, typename Func>
-class TemplateCommand : public Command<Proc>,
+class TemplateCommand final : public Command<Proc>,
     private Func
 {
 public:
@@ -123,7 +123,7 @@ public:
 };
 
 template <typename Contents>
-class ReferenceCountingAdapter : public ReferenceCountedObject
+class ReferenceCountingAdapter final : public ReferenceCountedObject
 {
 public:
     template <typename... Args>
@@ -186,13 +186,13 @@ namespace juce {
     };
 
     template <typename Numeric>
-    struct VariantConverter<Range<Numeric>> : GenericVariantConverter<Range<Numeric>> {};
+    struct VariantConverter<Range<Numeric>> final : GenericVariantConverter<Range<Numeric>> {};
 
     template<>
-    struct VariantConverter<MPEZoneLayout> : GenericVariantConverter<MPEZoneLayout> {};
+    struct VariantConverter<MPEZoneLayout> final : GenericVariantConverter<MPEZoneLayout> {};
 
     template<>
-    struct VariantConverter<std::shared_ptr<AudioFormatReaderFactory>>
+    struct VariantConverter<std::shared_ptr<AudioFormatReaderFactory>> final
         : GenericVariantConverter<std::shared_ptr<AudioFormatReaderFactory>>
     {};
 } // namespace juce

@@ -22,7 +22,7 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
 
-class MainSamplerView : public juce::Component,
+class MainSamplerView final : public juce::Component,
     private DataModel::Listener,
     private ChangeListener,
     public ValueTree::Listener

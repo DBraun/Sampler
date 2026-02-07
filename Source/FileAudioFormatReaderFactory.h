@@ -32,7 +32,7 @@ inline std::unique_ptr<AudioFormatReader> makeAudioFormatReader(AudioFormatManag
 
 
 //==============================================================================
-class FileAudioFormatReaderFactory : public AudioFormatReaderFactory
+class FileAudioFormatReaderFactory final : public AudioFormatReaderFactory
 {
 public:
     explicit FileAudioFormatReaderFactory(File fileIn)

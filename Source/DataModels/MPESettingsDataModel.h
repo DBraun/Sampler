@@ -17,7 +17,7 @@
 
 #include "../Misc.h"
 
-class MPESettingsDataModel : private ValueTree::Listener
+class MPESettingsDataModel final : private ValueTree::Listener
 {
 public:
     class Listener

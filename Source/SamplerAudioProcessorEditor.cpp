@@ -62,7 +62,7 @@ SamplerAudioProcessorEditor::SamplerAudioProcessorEditor(SamplerAudioProcessor& 
     mpeSettings.setVoiceStealingEnabled(state.voiceStealingEnabled, nullptr);
     mpeSettings.setMPEZoneLayout(state.mpeZoneLayout, nullptr);
 
-    dataModel.setSampleReader(move(state.readerFactory), nullptr);
+    dataModel.setSampleReader(std::move(state.readerFactory), nullptr);
     dataModel.setLoopPointsSeconds(state.loopPointsSeconds, nullptr);
     dataModel.setCentreFrequencyHz(state.centreFrequencyHz, nullptr);
     dataModel.setLoopMode(state.loopMode, nullptr);

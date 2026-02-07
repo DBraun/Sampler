@@ -17,7 +17,7 @@
 
 #include "MPESamplerSound.h"
 
-class MPESamplerVoice : public MPESynthesiserVoice
+class MPESamplerVoice final : public MPESynthesiserVoice
 {
 public:
     explicit MPESamplerVoice(std::shared_ptr<const MPESamplerSound> sound, AudioProcessorValueTreeState& vts)

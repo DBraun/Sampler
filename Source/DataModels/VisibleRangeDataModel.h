@@ -15,7 +15,7 @@
 
 #pragma once
 
-class VisibleRangeDataModel : private ValueTree::Listener
+class VisibleRangeDataModel final : private ValueTree::Listener
 {
 public:
     class Listener

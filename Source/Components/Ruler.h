@@ -15,7 +15,7 @@
 
 #pragma once
 
-class Ruler : public juce::Component,
+class Ruler final : public juce::Component,
     private VisibleRangeDataModel::Listener
 {
 public:

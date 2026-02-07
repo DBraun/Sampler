@@ -15,7 +15,7 @@
 
 #pragma once
 
-class WaveformView : public juce::Component,
+class WaveformView final : public juce::Component,
     private ChangeListener,
     private DataModel::Listener,
     private VisibleRangeDataModel::Listener
